@@ -1672,10 +1672,12 @@ o2::dataformats::VertexBase VarManager::RecalculatePrimaryVertex(T const& track0
 {
   KFParticle trk0KF;
   KFPTrack kfpTrack0 = createKFPTrackFromTrack(track0);
-  trk0KF = KFParticle(kfpTrack0, -11 * track0.sign());
+  // trk0KF = KFParticle(kfpTrack0, -11 * track0.sign());
+  trk0KF = KFParticle(kfpTrack0, 321 * track0.sign());//here
   KFParticle trk1KF;
   KFPTrack kfpTrack1 = createKFPTrackFromTrack(track1);
-  trk1KF = KFParticle(kfpTrack1, -11 * track1.sign());
+  // trk1KF = KFParticle(kfpTrack1, -11 * track1.sign());
+  trk1KF = KFParticle(kfpTrack1, 321 * track1.sign());//here
 
   KFParticle kVtx;
   kVtx.Initialize();
@@ -3489,8 +3491,10 @@ void VarManager::FillPair(T1 const& t1, T2 const& t2, float* values)
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;
@@ -3972,8 +3976,10 @@ void VarManager::FillPairME(T1 const& t1, T2 const& t2, float* values)
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;
@@ -4217,8 +4223,10 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;
@@ -4488,8 +4496,10 @@ void VarManager::FillPairVertexing(C const& collision, T const& t1, T const& t2,
   if (!values) {
     values = fgValues;
   }
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToKPi) {
     m1 = o2::constants::physics::MassKaonCharged;
     m2 = o2::constants::physics::MassPionCharged;
@@ -4875,8 +4885,10 @@ void VarManager::FillPairVertexingRecomputePV(C const& /*collision*/, T const& t
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToKPi) {
     m1 = o2::constants::physics::MassKaonCharged;
     m2 = o2::constants::physics::MassPionCharged;
@@ -5724,8 +5736,10 @@ void VarManager::FillPairVn(T1 const& t1, T2 const& t2, float* values)
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  //float m1 = o2::constants::physics::MassElectron;
+  //float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;
@@ -6518,8 +6532,10 @@ float VarManager::calculatePhiV(T1 const& t1, T2 const& t2)
   // u = v12 / |v12|            , the unit vector of v12
   // v = v1 x v2 / |v1 x v2|    , unit vector perpendicular to v1 and v2
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;
@@ -6950,8 +6966,10 @@ void VarManager::FillPairAlice3(T1 const& t1, T2 const& t2, float* values)
     values = fgValues;
   }
 
-  float m1 = o2::constants::physics::MassElectron;
-  float m2 = o2::constants::physics::MassElectron;
+  // float m1 = o2::constants::physics::MassElectron;
+  // float m2 = o2::constants::physics::MassElectron;
+  float m1 = o2::constants::physics::MassKaonCharged;//here
+  float m2 = o2::constants::physics::MassKaonCharged;//here
   if constexpr (pairType == kDecayToMuMu) {
     m1 = o2::constants::physics::MassMuon;
     m2 = o2::constants::physics::MassMuon;

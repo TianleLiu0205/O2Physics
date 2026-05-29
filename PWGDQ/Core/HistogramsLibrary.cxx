@@ -1360,16 +1360,22 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
           hm->AddHistogram(histClass, "Mass_Pt_CosThetaRM", "", false, 200, 1.0, 5.0, VarManager::kMass, 40, 0.0, 20.0, VarManager::kPt, 20, -1., 1., VarManager::kCosThetaRM);
         }
       }
-      if (subGroupStr.Contains("globalpolarization")) {
+      if (subGroupStr.Contains("globalpolarization")) {//here, mass bins
         hm->AddHistogram(histClass, "CosThetaStarRandom", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarRandom);
-        hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 50, 2.0, 4.0, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
+        hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 100, 0.98, 1.08, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
         if (subGroupStr.Contains("tpc")) {
           hm->AddHistogram(histClass, "CosThetaStarTPC", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+          hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
         }
         if (subGroupStr.Contains("ft0")) {
           hm->AddHistogram(histClass, "CosThetaStarFT0A", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
           hm->AddHistogram(histClass, "CosThetaStarFT0C", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
-          hm->AddHistogram(histClass, "Cos2ThetaStarFT0C_Mass", "", true, 50, 2.0, 4.0, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarFT0C);
+          hm->AddHistogram(histClass, "Cos2ThetaStarFT0C_Mass", "", true, 100, 0.98, 1.08, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarFT0C);
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0C", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
+          hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0C", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
+          hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
         }
         if (subGroupStr.Contains("mc")) {
           hm->AddHistogram(histClass, "EventPlaneAngle", "", false, 100, -TMath::Pi(), TMath::Pi(), VarManager::kMCEventPlaneAngle);
