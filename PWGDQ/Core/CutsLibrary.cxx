@@ -886,6 +886,22 @@ AnalysisCompositeCut* o2::aod::dqcuts::GetCompositeCut(const char* cutName)
     return cut;
   }
 
+  if (!nameStr.compare("kaonPt0to6")) {
+    // pT range cut
+    auto* cut_pt = new AnalysisCut(
+      "kaonPt0to6_pt",
+      "0.15 < pT < 6 GeV/c");
+
+    cut_pt->AddCut(VarManager::kPt, 0.15, 6.0);
+    cut->AddCut(cut_pt);
+
+    // Reuse the existing kaon PID composite cut
+    cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+
+    return cut;
+  }
+//here
+
   if (!nameStr.compare("kaonPosPID4")) {
     cut->AddCut(GetAnalysisCut("kaonPID_TPCnTOF"));
     cut->AddCut(GetAnalysisCut("posTrack"));
