@@ -939,6 +939,12 @@ MCSignal* o2::aod::dqmcsignals::GetMCSignal(const char* name)
     signal = new MCSignal(name, "ee pairs from j/psi decays", {prong, prong}, {1, 1}); // signal at pair level
     return signal;
   }
+  if (!nameStr.compare("kkFromPhi")) {
+    MCProng prong(2,{321, 333},{true, true},{false, false},{0, 0},{0, 0},{false, false});
+    prong.SetSourceBit(0, MCProng::kPhysicalPrimary);
+    signal = new MCSignal(name,"K+K- pairs from phi decays",{prong, prong},{1, 1}); // two kaons from the same phi
+    return signal;
+  }
   if (!nameStr.compare("eeFromJpsiExclusive")) {
     MCProng prong(2, {11, 443}, {true, true}, {false, false}, {0, 0}, {0, 0}, {false, false});
     prong.SetSourceBit(0, MCProng::kPhysicalPrimary);
