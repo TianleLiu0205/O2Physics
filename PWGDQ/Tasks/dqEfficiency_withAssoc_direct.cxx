@@ -1195,6 +1195,7 @@ struct AnalysisSameEventPairing {
   std::map<int, std::vector<TString>> fMuonHistNamesMCmatched;
   std::vector<MCSignal*> fRecMCSignals;
   std::vector<MCSignal*> fGenMCSignals;
+  //MCSignal* fEFromJpsiSignal = nullptr;//here
   MCSignal* fEFromJpsiSignal = nullptr;
 
   std::vector<AnalysisCompositeCut> fPairCuts;
@@ -1273,7 +1274,8 @@ struct AnalysisSameEventPairing {
       }
     }
     // get the fEFromJpsiSignal from the library
-    fEFromJpsiSignal = o2::aod::dqmcsignals::GetMCSignal("eFromJpsi");
+    //fEFromJpsiSignal = o2::aod::dqmcsignals::GetMCSignal("eFromJpsi");
+    fEFromJpsiSignal = o2::aod::dqmcsignals::GetMCSignal("kaonFromPhi");//here
 
     // get the barrel track selection cuts
     string tempCuts;
@@ -2105,6 +2107,7 @@ struct AnalysisSameEventPairing {
           }
           isig++;
         }
+        //if (fEFromJpsiSignal->CheckSignal(true, track_raw)) {//here
         if (fEFromJpsiSignal->CheckSignal(true, track_raw)) {
           eFromJpsiMcParticleIndices.push_back(track.globalIndex());
         }
