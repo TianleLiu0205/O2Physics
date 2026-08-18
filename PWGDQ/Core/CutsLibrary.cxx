@@ -886,20 +886,53 @@ AnalysisCompositeCut* o2::aod::dqcuts::GetCompositeCut(const char* cutName)
     return cut;
   }
 
-  if (!nameStr.compare("kaonPt0to6")) {
-    // pT range cut
-    auto* cut_pt = new AnalysisCut(
-      "kaonPt0to6_pt",
-      "0.15 < pT < 6 GeV/c");
+  // if (!nameStr.compare("kaonPt0to6")) {
+  //   // pT range cut
+  //   auto* cut_pt = new AnalysisCut(
+  //     "kaonPt0to6_pt",
+  //     "0.15 < pT < 6 GeV/c");
 
-    cut_pt->AddCut(VarManager::kPt, 0.15, 6.0);
-    cut->AddCut(cut_pt);
+  //   cut_pt->AddCut(VarManager::kPt, 0.15, 6.0);
+  //   cut->AddCut(cut_pt);
 
-    // Reuse the existing kaon PID composite cut
-    cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+  //   // Reuse the existing kaon PID composite cut
+  //   cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
 
-    return cut;
-  }
+  //   return cut;
+  // }
+  if (!nameStr.compare("kaonPt0to6_noPID")) {
+  AnalysisCut* kineCut = new AnalysisCut("kaonPt0to6_kine", "kaon kine cuts");
+  kineCut->AddCut(VarManager::kPt, 0.15, 6.0);
+  kineCut->AddCut(VarManager::kEta, -0.9, 0.9);
+
+  AnalysisCut* qualityCuts = new AnalysisCut("kaonPt0to6_quality", "kaon quality cuts");
+  qualityCuts->AddCut(VarManager::kIsITSibAny, 0.5, 1.5);
+  qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
+  qualityCuts->AddCut(VarManager::kTPCncls, 70, 161.);
+  qualityCuts->AddCut(VarManager::kTrackDCAz, -0.5, 0.5);
+
+  cut->AddCut(kineCut);
+  cut->AddCut(qualityCuts);
+  return cut;
+}
+
+if (!nameStr.compare("kaonPt0to6")) {
+  AnalysisCut* kineCut = new AnalysisCut("kaonPt0to6_kine", "kaon kine cuts");
+  kineCut->AddCut(VarManager::kPt, 0.15, 6.0);
+  kineCut->AddCut(VarManager::kEta, -0.9, 0.9);
+
+  AnalysisCut* qualityCuts = new AnalysisCut("kaonPt0to6_quality", "kaon quality cuts");
+  qualityCuts->AddCut(VarManager::kIsITSibAny, 0.5, 1.5);
+  qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
+  qualityCuts->AddCut(VarManager::kTPCncls, 70, 161.);
+  qualityCuts->AddCut(VarManager::kTrackDCAz, -0.5, 0.5);
+
+  cut->AddCut(kineCut);
+  cut->AddCut(qualityCuts);
+  cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+
+  return cut;
+}
 //here
 
   if (!nameStr.compare("kaonPosPID4")) {
