@@ -2353,7 +2353,9 @@ void VarManager::FillEvent(T const& event, float* values)
     values[kR2EP_BC_Im] = std::isnan(R2EP_BC_Im) || std::isinf(R2EP_BC_Im) ? 0. : R2EP_BC_Im;
     values[kWR2EP_BC_Im] = std::isnan(R2EP_BC_Im) || std::isinf(R2EP_BC_Im) ? 0. : 1.0;
   }
-
+  if constexpr ((fillMap & CollisionQvectCentr) > 0) {
+    FillQVectorFromCentralFW(event, values);
+  }//changed here
   if constexpr ((fillMap & CollisionMC) > 0) {
     values[kMCEventGeneratorId] = event.generatorsID();
     values[kMCEventSubGeneratorId] = event.getSubGeneratorId();
