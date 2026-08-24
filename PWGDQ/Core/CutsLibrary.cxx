@@ -931,7 +931,7 @@ if (!nameStr.compare("kaonPt0to6_noPID")) {
   qualityCuts->AddCut(VarManager::kITSchi2, 0.0, 36.0);
   qualityCuts->AddCut(VarManager::kTPCncls, 70.0, 999.0);
   qualityCuts->AddCut(VarManager::kTPCnCRoverFindCls, 0.8, 2.0);
-  qualityCuts->AddCut(VarManager::kPVContributor, 0.5, 1.5);
+  // qualityCuts->AddCut(VarManager::kPVContributor, 0.5, 1.5);
   cut->AddCut(kineCut);
   cut->AddCut(qualityCuts);
   return cut;
@@ -948,7 +948,7 @@ if (!nameStr.compare("kaonPt0to6")) {
   qualityCuts->AddCut(VarManager::kITSchi2, 0.0, 36.0);
   qualityCuts->AddCut(VarManager::kTPCncls, 70.0, 999.0);
   qualityCuts->AddCut(VarManager::kTPCnCRoverFindCls, 0.8, 2.0);
-  qualityCuts->AddCut(VarManager::kPVContributor, 0.5, 1.5);
+  // qualityCuts->AddCut(VarManager::kPVContributor, 0.5, 1.5);
   cut->AddCut(kineCut);
   cut->AddCut(qualityCuts);
   cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
