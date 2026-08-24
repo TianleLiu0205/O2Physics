@@ -6078,15 +6078,15 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
   }
 
   if (!nameStr.compare("kaonPID_TPCnTOF")) {
-    // cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
-    cut->AddCut(VarManager::kTPCnSigmaKa, -2.5, 2.5);//here
+     cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
+    // cut->AddCut(VarManager::kTPCnSigmaKa, -2.5, 2.5);//here
     cut->AddCut(VarManager::kTOFnSigmaKa, -3.0, 3.0);
     return cut;
   }
 
   if (!nameStr.compare("kaonPIDnsigma700")) {
-    // cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
-    cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);//here
+     cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
+    //cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);//here
     cut->AddCut(VarManager::kPin, 0.0, 0.7);
     return cut;
   }
