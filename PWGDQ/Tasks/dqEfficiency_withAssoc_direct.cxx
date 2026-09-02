@@ -1506,6 +1506,7 @@ struct AnalysisSameEventPairing {
         histNames += Form("MCTruthGen_%s;", sig->GetName()); // TODO: Add these names to a std::vector to avoid using Form in the process function
         histNames += Form("MCTruthGenSel_%s;", sig->GetName());
       } else if (sig->GetNProngs() == 2) {
+        histNames += Form("MCTruthGenBeforePairSel_%s;", sig->GetName()); // before event selection
         histNames += Form("MCTruthGenPairSel_%s;", sig->GetName()); // after event selection
         if (fConfigOptions.fConfigPseudoQA.value) {
           histNames += Form("MCTruthGenPseudoPolPairSel_%s;", sig->GetName());
@@ -1515,6 +1516,7 @@ struct AnalysisSameEventPairing {
       // for these pair level signals, also add histograms for each MCgenAcc cut if specified
       if (fUseMCGenAccCut) {
         for (auto& cut : fMCGenAccCuts) {
+          histNames += Form("MCTruthGenBeforePairSel_%s_%s;", sig->GetName(), cut->GetName()); // before event selection and MCgenAcc cut
           histNames += Form("MCTruthGenPairSel_%s_%s;", sig->GetName(), cut->GetName()); // after event selection and MCgenAcc cut
           if (fConfigOptions.fConfigPseudoQA.value) {
             histNames += Form("MCTruthGenPseudoPolPairSel_%s_%s;", sig->GetName(), cut->GetName());
@@ -2066,13 +2068,21 @@ struct AnalysisSameEventPairing {
     std::vector<uint64_t> eFromJpsiMcParticleIndices;
 
     // Now loop over reconstructed events to select only MC particles belonging to the same MC collision as the reconstructed event
+    // for (auto& event : events) {
+    //   if (!event.isEventSelected_bit(0)) {
+    //     continue;
+    //   }
+    //   if (!event.has_mcCollision()) {
+    //     continue;
+    //   }
+
     for (auto& event : events) {
-      if (!event.isEventSelected_bit(0)) {
-        continue;
-      }
-      if (!event.has_mcCollision()) {
-        continue;
-      }
+
+    bool isEventSelected = event.isEventSelected_bit(0);
+
+    if (!event.has_mcCollision()) {
+      continue;
+    }//here add not selected events to the miniTree
 
       eFromJpsiMcParticleIndices.clear();
 
@@ -2103,10 +2113,28 @@ struct AnalysisSameEventPairing {
             //   continue;
             // }
             mcDecision |= (static_cast<uint32_t>(1) << isig);
-            fHistMan->FillHistClass(Form("MCTruthGenSel_%s", sig->GetName()), VarManager::fgValues);
-            MCTruthTableEffi(VarManager::fgValues[VarManager::kMCPt], VarManager::fgValues[VarManager::kMCEta], VarManager::fgValues[VarManager::kMCY], VarManager::fgValues[VarManager::kMCPhi], VarManager::fgValues[VarManager::kMCVz], VarManager::fgValues[VarManager::kMCVtxZ], VarManager::fgValues[VarManager::kMultFT0A], VarManager::fgValues[VarManager::kMultFT0C], VarManager::fgValues[VarManager::kCentFT0M], VarManager::fgValues[VarManager::kVtxNcontribReal]);
+            // fHistMan->FillHistClass(Form("MCTruthGenSel_%s", sig->GetName()), VarManager::fgValues);
+            // MCTruthTableEffi(VarManager::fgValues[VarManager::kMCPt], VarManager::fgValues[VarManager::kMCEta], VarManager::fgValues[VarManager::kMCY], VarManager::fgValues[VarManager::kMCPhi], VarManager::fgValues[VarManager::kMCVz], VarManager::fgValues[VarManager::kMCVtxZ], VarManager::fgValues[VarManager::kMultFT0A], VarManager::fgValues[VarManager::kMultFT0C], VarManager::fgValues[VarManager::kCentFT0M], VarManager::fgValues[VarManager::kVtxNcontribReal]);
 
-            if (fConfigOptions.fConfigMiniTree) {
+            if (isEventSelected) {
+              fHistMan->FillHistClass(
+                  Form("MCTruthGenSel_%s", sig->GetName()),
+                  VarManager::fgValues);
+
+              MCTruthTableEffi(
+                  VarManager::fgValues[VarManager::kMCPt],
+                  VarManager::fgValues[VarManager::kMCEta],
+                  VarManager::fgValues[VarManager::kMCY],
+                  VarManager::fgValues[VarManager::kMCPhi],
+                  VarManager::fgValues[VarManager::kMCVz],
+                  VarManager::fgValues[VarManager::kMCVtxZ],
+                  VarManager::fgValues[VarManager::kMultFT0A],
+                  VarManager::fgValues[VarManager::kMultFT0C],
+                  VarManager::fgValues[VarManager::kCentFT0M],
+                  VarManager::fgValues[VarManager::kVtxNcontribReal]);
+            }//here remove not selected events from the miniTree
+            
+            if (isEventSelected && fConfigOptions.fConfigMiniTree) {
               auto mcEvent = mcEvents.rawIteratorAt(track_raw.mcCollisionId());
               dileptonMiniTreeGen(mcDecision, mcEvent.impactParameter(), track_raw.pt(), track_raw.eta(), track_raw.phi(), -999, -999, -999);
             }
@@ -2154,21 +2182,64 @@ struct AnalysisSameEventPairing {
                     VarManager::FillTrackCollisionMC<TPairType>(motherMCParticle_t1, collVtxPos, pdgDB->Mass(motherMCParticle_t1.pdgCode()));
                   }
                 }
-                fHistMan->FillHistClass(Form("MCTruthGenPairSel_%s", sig->GetName()), VarManager::fgValues);
-                if (fConfigOptions.fConfigQA.value) {
-                  fHistMan->FillHistClass(Form("MCTruthGenPseudoPolPairSel_%s", sig->GetName()), VarManager::fgValues);
-                }
+                // fHistMan->FillHistClass(Form("MCTruthGenPairSel_%s", sig->GetName()), VarManager::fgValues);
+                
+                // before event selection
+                fHistMan->FillHistClass(Form("MCTruthGenBeforePairSel_%s", sig->GetName()),VarManager::fgValues);//here add not selected events to the miniTree
+
+                // after event selection
+                if (isEventSelected) {
+                  fHistMan->FillHistClass(
+                      Form("MCTruthGenPairSel_%s", sig->GetName()),
+                      VarManager::fgValues);
+
+                  if (fConfigOptions.fConfigPseudoQA.value) {
+                    fHistMan->FillHistClass(
+                        Form("MCTruthGenPseudoPolPairSel_%s", sig->GetName()),
+                        VarManager::fgValues);
+                  }
+                }//here remove not selected events from the miniTree
+
+                // if (fUseMCGenAccCut) {
+                //   for (auto& cut : fMCGenAccCuts) {
+                //     if (cut->IsSelected(VarManager::fgValues)) {
+                //       fHistMan->FillHistClass(Form("MCTruthGenPairSel_%s_%s", sig->GetName(), cut->GetName()), VarManager::fgValues);
+                //       if (fConfigOptions.fConfigPseudoQA.value) {
+                //         fHistMan->FillHistClass(Form("MCTruthGenPseudoPolPairSel_%s_%s", sig->GetName(), cut->GetName()), VarManager::fgValues);
+                //       }
+                //     }
+                //   }
+                // }
+
                 if (fUseMCGenAccCut) {
-                  for (auto& cut : fMCGenAccCuts) {
-                    if (cut->IsSelected(VarManager::fgValues)) {
-                      fHistMan->FillHistClass(Form("MCTruthGenPairSel_%s_%s", sig->GetName(), cut->GetName()), VarManager::fgValues);
+                for (auto& cut : fMCGenAccCuts) {
+                  if (cut->IsSelected(VarManager::fgValues)) {
+
+                    // before event selection
+                    fHistMan->FillHistClass(
+                        Form("MCTruthGenBeforePairSel_%s_%s",
+                            sig->GetName(), cut->GetName()),
+                        VarManager::fgValues);
+
+                    // after event selection
+                    if (isEventSelected) {
+                      fHistMan->FillHistClass(
+                          Form("MCTruthGenPairSel_%s_%s",
+                              sig->GetName(), cut->GetName()),
+                          VarManager::fgValues);
+
                       if (fConfigOptions.fConfigPseudoQA.value) {
-                        fHistMan->FillHistClass(Form("MCTruthGenPseudoPolPairSel_%s_%s", sig->GetName(), cut->GetName()), VarManager::fgValues);
+                        fHistMan->FillHistClass(
+                            Form("MCTruthGenPseudoPolPairSel_%s_%s",
+                                sig->GetName(), cut->GetName()),
+                            VarManager::fgValues);
                       }
                     }
                   }
                 }
-                if (fConfigOptions.fConfigMiniTree) {
+              }//here add not selected events to the miniTree
+
+                if (isEventSelected && fConfigOptions.fConfigMiniTree) {
                   // WARNING! To be checked
                   dileptonMiniTreeGen(mcDecision, -999, t1_raw.pt(), t1_raw.eta(), t1_raw.phi(), t2_raw.pt(), t2_raw.eta(), t2_raw.phi());
                 }
@@ -3162,18 +3233,18 @@ void DefineHistograms(HistogramManager* histMan, TString histClasses, const char
       dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "pair", histName);
     }
 
-    if (classStr.Contains("MCTruthGenPair")) {
-      dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_pair", histName);
-    }
-    if (classStr.Contains("MCTruthGenPseudoPolPair")) {
-      dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "polarization-pseudoproper-gen", histName);
+    if (classStr.Contains("MCTruthGenPair") || classStr.Contains("MCTruthGenBeforePairSel")) { dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_pair", histName); }
+
+    if (classStr.Contains("MCTruthGenPseudoPolPair")) { 
+      dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "polarization-pseudoproper-gen", histName); 
     }
 
     if (classStr.Contains("MCTruthGenSelBR")) {
-      dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_triple");
-    } else if (classStr.Contains("MCTruthGen")) {
-      dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_track");
-    }
+       dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_triple"); 
+      } 
+      else if (classStr.Contains("MCTruthGen") && !classStr.Contains("MCTruthGenBeforePairSel") && !classStr.Contains("MCTruthGenPseudoPolPair")) {
+         dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_track"); 
+        }
 
     // if (classStr.Contains("MCTruthGen")) {
     //   dqhistograms::DefineHistograms(histMan, objArray->At(iclass)->GetName(), "mctruth_track");
