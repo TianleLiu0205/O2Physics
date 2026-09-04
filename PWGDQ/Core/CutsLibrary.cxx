@@ -6087,7 +6087,7 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
   if (!nameStr.compare("kaonPIDnsigma700")) {
      cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
     //cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);//here
-    cut->AddCut(VarManager::kPin, 0.0, 0.7);
+    // cut->AddCut(VarManager::kPin, 0.0, 0.7);//here
     return cut;
   }
 
