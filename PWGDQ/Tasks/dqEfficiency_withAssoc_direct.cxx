@@ -1204,7 +1204,7 @@ struct AnalysisSameEventPairing {
       },
 
       {
-        "EventLoss/MCEventNchReco",
+        "EventLoss/MCEventNchSelected",
         "Generated MC collisions reconstructed at least once;N_{ch}^{gen} (|#eta|<0.5);Entries",
         {HistType::kTH1F, {{500, 0., 500.}}}
       },
@@ -2180,7 +2180,7 @@ struct AnalysisSameEventPairing {
           HIST("EventLoss/MCEventNchSelected"),
           nchGen);
       }
-      
+
       // ---------------------------------------------------------
       // Get all MC particles belonging to this MC collision
       // ---------------------------------------------------------
