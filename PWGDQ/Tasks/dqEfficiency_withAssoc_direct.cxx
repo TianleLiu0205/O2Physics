@@ -52,6 +52,7 @@
 #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 #include <ReconstructionDataFormats/Track.h>
+#include <Framework/HistogramRegistry.h>
 
 #include <THashList.h>
 #include <TList.h>
@@ -74,6 +75,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <unordered_set>
 
 using std::cout;
 using std::endl;
@@ -1187,6 +1190,70 @@ struct AnalysisSameEventPairing {
 
   HistogramManager* fHistMan;
 
+
+// ============================================================
+// Event loss / Signal loss histograms
+// ============================================================
+  HistogramRegistry fLossRegistry{
+    "lossRegistry",
+    {
+      {
+        "EventLoss/MCEventNchAll",
+        "All generated MC collisions;N_{ch}^{gen} (|#eta|<0.5);Entries",
+        {HistType::kTH1F, {{500, 0., 500.}}}
+      },
+
+      {
+        "EventLoss/MCEventNchReco",
+        "Generated MC collisions reconstructed at least once;N_{ch}^{gen} (|#eta|<0.5);Entries",
+        {HistType::kTH1F, {{500, 0., 500.}}}
+      },
+
+      {
+        "EventLoss/RecoEventMultFT0CSelected",
+        "FT0C multiplicity of selected reconstructed MC events;FT0C multiplicity;Entries",
+        {HistType::kTH1F, {{2000, 0., 2000.}}}
+      },
+
+      {
+        "SignalLoss/MCGenPhiPtNchBefore",
+        "Generated #phi before event selection;p_{T}^{gen} (GeV/c);N_{ch}^{gen} (|#eta|<0.5)",
+        {
+          HistType::kTH2F,
+          {
+            {100, 0., 20.},
+            {500, 0., 500.}
+          }
+        }
+      },
+
+      {
+        "SignalLoss/MCGenPhiPtNchAfter",
+        "Generated #phi in selected reconstructed events;p_{T}^{gen} (GeV/c);N_{ch}^{gen} (|#eta|<0.5)",
+        {
+          HistType::kTH2F,
+          {
+            {100, 0., 20.},
+            {500, 0., 500.}
+          }
+        }
+      },
+
+      {
+        "EventLoss/MCGenNchVsRecoCentFT0C",
+        "Generated multiplicity vs reconstructed FT0C centrality;Centrality FT0C (%);N_{ch}^{gen} (|#eta|<0.5)",
+        {
+          HistType::kTH2F,
+          {
+            {100, 0., 100.},
+            {500, 0., 500.}
+          }
+        }
+      }
+    }
+  };//here loss cal
+
+
   // vectors needed for PV recomputation
   std::vector<int64_t> pvContribGlobIDs;
   std::vector<o2::track::TrackParCov> pvContribTrackPars;
@@ -2042,6 +2109,131 @@ struct AnalysisSameEventPairing {
 
   PresliceUnsorted<aod::McParticles> perReducedMcEvent = aod::mcparticle::mcCollisionId;
 
+  template <typename TEvents, typename TEventsMC>
+  void runEventSignalLoss(TEvents const& events,
+                          TEventsMC const& mcEvents,
+                          McParticles const& mcTracks)
+  {
+    cout << "AnalysisSameEventPairing::runEventSignalLoss() called" << endl;
+
+    // Store MC collisions which:
+    // 1) have at least one reconstructed collision
+    // 2) have at least one reconstructed collision passing event selection
+    std::unordered_set<int64_t> hasReco;
+    std::unordered_set<int64_t> hasSelectedReco;
+
+    // =========================================================
+    // First loop: reconstructed collisions
+    // =========================================================
+    for (auto const& event : events) {
+
+      if (!event.has_mcCollision()) {
+        continue;
+      }
+
+      const int64_t mcCollisionId = event.mcCollisionId();
+
+      // Event-loss numerator:
+      // this generated MC collision was reconstructed at least once
+      hasReco.insert(mcCollisionId);
+
+      if (event.isEventSelected_bit(0)) {
+
+        hasSelectedReco.insert(mcCollisionId);
+
+        fLossRegistry.fill(
+          HIST("EventLoss/RecoEventMultFT0CSelected"),
+          event.multFT0C());
+
+        auto mcEvent = mcEvents.rawIteratorAt(mcCollisionId);
+
+        fLossRegistry.fill(
+          HIST("EventLoss/MCGenNchVsRecoCentFT0C"),
+          event.centFT0C(),
+          mcEvent.multMCNParticlesEta05());
+      }
+    }
+
+    // =========================================================
+    // Second loop: ALL generated MC collisions
+    // =========================================================
+    for (auto const& mcEvent : mcEvents) {
+
+      const int64_t mcCollisionId = mcEvent.globalIndex();
+      const float nchGen = mcEvent.multMCNParticlesEta05();
+
+      // ---------------------------------------------------------
+      // Event-loss denominator:
+      // all generated MC collisions
+      // ---------------------------------------------------------
+      fLossRegistry.fill(
+        HIST("EventLoss/MCEventNchAll"),
+        nchGen);
+
+      // ---------------------------------------------------------
+      // Event-loss numerator:
+      // generated MC collision reconstructed at least once
+      // ---------------------------------------------------------
+      if (hasReco.find(mcCollisionId) != hasReco.end()) {
+        fLossRegistry.fill(
+          HIST("EventLoss/MCEventNchReco"),
+          nchGen);
+      }
+
+      // ---------------------------------------------------------
+      // Get all MC particles belonging to this MC collision
+      // ---------------------------------------------------------
+      auto groupedMCTracks =
+        mcTracks.sliceBy(perReducedMcEvent, mcCollisionId);
+
+      groupedMCTracks.bindInternalIndicesTo(&mcTracks);
+
+      // ---------------------------------------------------------
+      // Loop over generated particles and directly select phi(1020)
+      //
+      // For signal loss we only need generated phi kinematics.
+      // Therefore no KK pair reconstruction is needed here.
+      // This also means points 4 and 7 can remain untouched.
+      // ---------------------------------------------------------
+      for (auto const& mcTrack : groupedMCTracks) {
+
+        if (std::abs(mcTrack.pdgCode()) != 333) {
+          continue;
+        }
+
+        // Generated phi rapidity cut used in the analysis note
+        if (std::abs(mcTrack.y()) >= 0.5f) {
+          continue;
+        }
+
+        const float phiPt = mcTrack.pt();
+
+        // -------------------------------------------------------
+        // Signal-loss denominator:
+        // all generated phi with |y| < 0.5
+        // -------------------------------------------------------
+        fLossRegistry.fill(
+          HIST("SignalLoss/MCGenPhiPtNchBefore"),
+          phiPt,
+          nchGen);
+
+        // -------------------------------------------------------
+        // Signal-loss numerator:
+        // generated phi whose MC collision has at least one
+        // reconstructed collision passing event selection
+        // -------------------------------------------------------
+        if (hasSelectedReco.find(mcCollisionId) != hasSelectedReco.end()) {
+          fLossRegistry.fill(
+            HIST("SignalLoss/MCGenPhiPtNchAfter"),
+            phiPt,
+            nchGen);
+        }
+      }
+    }
+
+    cout << "AnalysisSameEventPairing::runEventSignalLoss() completed" << endl;
+  }//here loss cal
+
   // template <int TPairType, typename TEventsMC>
   template <int TPairType, uint32_t TEventFillMap, typename TEvents, typename TEventsMC>
   void runMCGen(TEvents const& events, TEventsMC const& mcEvents, McParticles const& mcTracks)
@@ -2272,6 +2464,7 @@ struct AnalysisSameEventPairing {
     cout << "AnalysisSameEventPairing::processBarrelPbPbOnly() called" << endl;
     runSameEventPairing<true, VarManager::kDecayToEE, gkEventFillMapWithCentAndMults, gkTrackFillMapWithCov>(events, bcs, trackAssocsPerCollision, barrelAssocs, barrelTracks, mcEvents, mcTracks);
     runMCGen<VarManager::kDecayToEE, gkEventFillMapWithCentAndMults>(events, mcEvents, mcTracks);
+    runEventSignalLoss(events, mcEvents, mcTracks); //here loss cal
     cout << "AnalysisSameEventPairing::processBarrelPbPbOnly() completed" << endl;
   }
 
