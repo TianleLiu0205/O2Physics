@@ -2172,14 +2172,15 @@ struct AnalysisSameEventPairing {
 
       // ---------------------------------------------------------
       // Event-loss numerator:
-      // generated MC collision reconstructed at least once
+      // generated MC collision with at least one selected
+      // reconstructed collision
       // ---------------------------------------------------------
-      if (hasReco.find(mcCollisionId) != hasReco.end()) {
+      if (hasSelectedReco.find(mcCollisionId) != hasSelectedReco.end()) {
         fLossRegistry.fill(
-          HIST("EventLoss/MCEventNchReco"),
+          HIST("EventLoss/MCEventNchSelected"),
           nchGen);
       }
-
+      
       // ---------------------------------------------------------
       // Get all MC particles belonging to this MC collision
       // ---------------------------------------------------------
