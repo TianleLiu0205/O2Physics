@@ -2446,6 +2446,9 @@ void VarManager::SetDefaultVarNames()
   fgVarNamesMap["kCosThetaStarRandom"] = kCosThetaStarRandom;
   fgVarNamesMap["kCos2ThetaStarRandom"] = kCos2ThetaStarRandom;
   fgVarNamesMap["kMCCosThetaStar"] = kMCCosThetaStar;
+  fgVarNamesMap["kMCCosThetaStarFT0C"] = kMCCosThetaStarFT0C;
+  fgVarNamesMap["kMCCosThetaStarFT0A"] = kMCCosThetaStarFT0A;
+  fgVarNamesMap["kMCCosThetaStarTPC"] = kMCCosThetaStarTPC;
   fgVarNamesMap["kPairWeight"] = kPairWeight;
   fgVarNamesMap["kCosPhiVP"] = kCosPhiVP;
   fgVarNamesMap["kPhiVP"] = kPhiVP;
