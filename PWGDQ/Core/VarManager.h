@@ -738,6 +738,9 @@ class VarManager : public TObject
     kMCPhiTildePP,
     kMCCosThetaRM,
     kMCCosThetaStar,
+    kMCCosThetaStarFT0C,
+    kMCCosThetaStarFT0A,
+    kMCCosThetaStarTPC,//here
 
     // Pair variables
     kCandidateId,
@@ -4383,24 +4386,42 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
     }
   }
 
-  if (fgUsedVars[kCosThetaStarRandom] || fgUsedVars[kMCCosThetaStar]) {
+//   if (fgUsedVars[kCosThetaStarRandom] || fgUsedVars[kMCCosThetaStar]) {
+//     ROOT::Math::Boost boostv12{v12.BoostToCM()};
+//     ROOT::Math::XYZVectorF v1_CM{(boostv12(v1).Vect()).Unit()};
+//     ROOT::Math::XYZVectorF v2_CM{(boostv12(v2).Vect()).Unit()};
+
+//     // using positive sign convention for the first track
+//     ROOT::Math::XYZVectorF v_CM = (t1.pdgCode() > 0 ? v1_CM : v2_CM);
+
+//     // Randomize the event plane angle to check the unpolarized contribution
+//     ROOT::Math::XYZVector zaxisRandom = ROOT::Math::XYZVector(TMath::Cos(values[kRandomPsi2]), TMath::Sin(values[kRandomPsi2]), 0).Unit();
+//     values[kCosThetaStarRandom] = v_CM.Dot(zaxisRandom);
+//     values[kCos2ThetaStarRandom] = values[kCosThetaStarRandom] * values[kCosThetaStarRandom];
+
+//     // truth event plane angle
+//     ROOT::Math::XYZVector zaxisTrue = ROOT::Math::XYZVector(TMath::Cos(values[kMCEventPlaneAngle]), TMath::Sin(values[kMCEventPlaneAngle]), 0).Unit();
+//     values[kMCCosThetaStar] = v_CM.Dot(zaxisTrue);
+//   }
+// }
+
+  if (fgUsedVars[kCosThetaStarRandom] || fgUsedVars[kMCCosThetaStar] || fgUsedVars[kMCCosThetaStarTPC] || fgUsedVars[kMCCosThetaStarFT0A] || fgUsedVars[kMCCosThetaStarFT0C]) {
     ROOT::Math::Boost boostv12{v12.BoostToCM()};
     ROOT::Math::XYZVectorF v1_CM{(boostv12(v1).Vect()).Unit()};
     ROOT::Math::XYZVectorF v2_CM{(boostv12(v2).Vect()).Unit()};
-
-    // using positive sign convention for the first track
     ROOT::Math::XYZVectorF v_CM = (t1.pdgCode() > 0 ? v1_CM : v2_CM);
 
-    // Randomize the event plane angle to check the unpolarized contribution
-    ROOT::Math::XYZVector zaxisRandom = ROOT::Math::XYZVector(TMath::Cos(values[kRandomPsi2]), TMath::Sin(values[kRandomPsi2]), 0).Unit();
-    values[kCosThetaStarRandom] = v_CM.Dot(zaxisRandom);
-    values[kCos2ThetaStarRandom] = values[kCosThetaStarRandom] * values[kCosThetaStarRandom];
+    if (fgUsedVars[kCosThetaStarRandom]) { ROOT::Math::XYZVector zaxisRandom = ROOT::Math::XYZVector(TMath::Cos(values[kRandomPsi2]), TMath::Sin(values[kRandomPsi2]), 0).Unit(); values[kCosThetaStarRandom] = v_CM.Dot(zaxisRandom); values[kCos2ThetaStarRandom] = values[kCosThetaStarRandom] * values[kCosThetaStarRandom]; }
 
-    // truth event plane angle
-    ROOT::Math::XYZVector zaxisTrue = ROOT::Math::XYZVector(TMath::Cos(values[kMCEventPlaneAngle]), TMath::Sin(values[kMCEventPlaneAngle]), 0).Unit();
-    values[kMCCosThetaStar] = v_CM.Dot(zaxisTrue);
+    if (fgUsedVars[kMCCosThetaStar]) { ROOT::Math::XYZVector zaxisTrue = ROOT::Math::XYZVector(TMath::Cos(values[kMCEventPlaneAngle]), TMath::Sin(values[kMCEventPlaneAngle]), 0).Unit(); values[kMCCosThetaStar] = v_CM.Dot(zaxisTrue); }
+
+    if (fgUsedVars[kMCCosThetaStarTPC]) { ROOT::Math::XYZVector zaxisTPC = ROOT::Math::XYZVector(TMath::Cos(values[kPsi2A]), TMath::Sin(values[kPsi2A]), 0).Unit(); values[kMCCosThetaStarTPC] = v_CM.Dot(zaxisTPC); }
+
+    if (fgUsedVars[kMCCosThetaStarFT0A]) { ROOT::Math::XYZVector zaxisFT0A = ROOT::Math::XYZVector(TMath::Cos(values[kPsi2B]), TMath::Sin(values[kPsi2B]), 0).Unit(); values[kMCCosThetaStarFT0A] = v_CM.Dot(zaxisFT0A); }
+
+    if (fgUsedVars[kMCCosThetaStarFT0C]) { ROOT::Math::XYZVector zaxisFT0C = ROOT::Math::XYZVector(TMath::Cos(values[kPsi2C]), TMath::Sin(values[kPsi2C]), 0).Unit(); values[kMCCosThetaStarFT0C] = v_CM.Dot(zaxisFT0C); }
   }
-}
+}//here
 
 template <int candidateType, typename T1, typename T2, typename T3>
 void VarManager::FillTripleMC(T1 const& t1, T2 const& t2, T3 const& t3, float* values)

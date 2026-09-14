@@ -1601,6 +1601,12 @@ void VarManager::SetDefaultVarNames()
   fgVariableUnits[kCos2ThetaStarRandom] = "";
   fgVariableNames[kMCCosThetaStar] = "cos#it{#theta}^{*}_{MC}";
   fgVariableUnits[kMCCosThetaStar] = "";
+  fgVariableNames[kMCCosThetaStarFT0C] = "MC cos#it{#theta}^{*}_{FT0C}";
+  fgVariableUnits[kMCCosThetaStarFT0C] = "";
+  fgVariableNames[kMCCosThetaStarFT0A] = "MC cos#it{#theta}^{*}_{FT0A}";
+  fgVariableUnits[kMCCosThetaStarFT0A] = "";
+  fgVariableNames[kMCCosThetaStarTPC] = "MC cos#it{#theta}^{*}_{TPC}";
+  fgVariableUnits[kMCCosThetaStarTPC] = "";//here
   fgVariableNames[kPairWeight] = "weight";
   fgVariableUnits[kPairWeight] = "";
   fgVariableNames[kCosPhiVP] = "cos#it{#varphi}_{VP}";
