@@ -4130,6 +4130,8 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
     cut->AddCut(VarManager::kIsSel8, 0.5, 1.5);
     cut->AddCut(VarManager::kIsNoTFBorder, 0.5, 1.5);
     cut->AddCut(VarManager::kIsNoITSROFBorder, 0.5, 1.5);
+    cut->AddCut(VarManager::kIsNoSameBunch, 0.5, 1.5);//here
+    cut->AddCut(VarManager::kIsGoodZvtxFT0vsPV, 0.5, 1.5);//here
     return cut;
   }
 
