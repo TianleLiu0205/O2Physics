@@ -4742,6 +4742,24 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
     return cut;
   }
 
+  if (nameStr == "acceptance_phiKK") {
+    constexpr double yMax = 0.8;
+    constexpr double etaMax = 0.8;
+    constexpr double ptMin = 0.15;
+    constexpr double ptMax = 999.0;
+  
+    // Generated phi: analysis rapidity interval.
+    cut->AddCut(VarManager::kMCY, -yMax, yMax);
+  
+    // Both generated kaon daughters: kinematic acceptance only.
+    cut->AddCut(VarManager::kMCPt1, ptMin, ptMax);
+    cut->AddCut(VarManager::kMCPt2, ptMin, ptMax);
+    cut->AddCut(VarManager::kMCEta1, -etaMax, etaMax);
+    cut->AddCut(VarManager::kMCEta2, -etaMax, etaMax);
+  
+    return cut;
+  }//here
+
   // ---------------------------------------------------
   // MC generated particle acceptance cuts
 
