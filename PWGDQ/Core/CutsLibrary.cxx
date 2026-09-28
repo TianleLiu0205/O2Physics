@@ -4742,7 +4742,7 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
     return cut;
   }
 
-  if (nameStr == "acceptance_phiKK") {
+  if (!nameStr.compare("acceptance_phiKK")) {
     constexpr double yMax = 0.8;
     constexpr double etaMax = 0.8;
     constexpr double ptMin = 0.15;
