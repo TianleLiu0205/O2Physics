@@ -952,6 +952,12 @@ if (!nameStr.compare("kaonPt0to6")) {
   cut->AddCut(kineCut);
   cut->AddCut(qualityCuts);
   cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+  
+    // 新增：低 p_in 区间的 TPC pion veto
+  AnalysisCut* pidCuts = new AnalysisCut("pidCuts", "pid cuts");
+  pidCuts->AddCut(VarManager::kTPCnSigmaPi, -2.0, 2.0, true, VarManager::kPin, 0.0, 0.7);
+  cut->AddCut(pidCuts);
+
   return cut;
 }
 //here
