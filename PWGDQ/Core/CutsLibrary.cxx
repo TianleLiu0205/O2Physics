@@ -962,6 +962,51 @@ if (!nameStr.compare("kaonPt0to6")) {
 }
 //here
 
+if (!nameStr.compare("kaonPt0to6_hasTOF")) {
+
+  // Kinematic cuts.
+  AnalysisCut* kineCut = new AnalysisCut(
+    "kaonPt0to6_hasTOF_kine", "kaon kine cuts");
+
+  kineCut->AddCut(VarManager::kPt, 0.15, 999.0);
+  kineCut->AddCut(VarManager::kEta, -0.8, 0.8);
+
+  // Track-quality cuts.
+  AnalysisCut* qualityCuts = new AnalysisCut(
+    "kaonPt0to6_hasTOF_quality", "kaon quality cuts");
+
+  qualityCuts->AddCut(VarManager::kTrackDCAxy, -0.1, 0.1);
+  qualityCuts->AddCut(VarManager::kTrackDCAz, -0.1, 0.1);
+  qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
+  qualityCuts->AddCut(VarManager::kITSchi2, 0.0, 36.0);
+  qualityCuts->AddCut(VarManager::kTPCncls, 70.0, 999.0);
+
+  // qualityCuts->AddCut(VarManager::kTPCnCRoverFindCls, 0.8, 2.0);
+  // qualityCuts->AddCut(VarManager::kPVContributor, 0.5, 1.5);
+
+  cut->AddCut(kineCut);
+  cut->AddCut(qualityCuts);
+
+  // Keep the original kaon PID.
+  cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+
+  AnalysisCut* pidCuts = new AnalysisCut(
+    "kaonPt0to6_hasTOF_pid", "kaon PID with required TOF");
+
+  // Require TOF for every selected track.
+  pidCuts->AddCut(VarManager::kHasTOF, 0.5, 1.5);
+
+  // Keep the original low-p_in TPC pion veto.
+  pidCuts->AddCut(
+    VarManager::kTPCnSigmaPi, -2.0, 2.0, true,
+    VarManager::kPin, 0.0, 0.7
+  );
+
+  cut->AddCut(pidCuts);
+
+  return cut;
+}//here
+
   if (!nameStr.compare("kaonPosPID4")) {
     cut->AddCut(GetAnalysisCut("kaonPID_TPCnTOF"));
     cut->AddCut(GetAnalysisCut("posTrack"));
