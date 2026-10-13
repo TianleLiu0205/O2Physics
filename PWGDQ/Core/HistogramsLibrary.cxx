@@ -1370,14 +1370,51 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
               hm->AddHistogram(histClass, "Mass_Centrality_CosThetaRM", "", false, 200, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1., 1., VarManager::kCosThetaRM);
           }
       }
-      if (subGroupStr.Contains("globalpolarization")) {//here, mass bins
+      // if (subGroupStr.Contains("globalpolarization")) {//here, mass bins
+      //   hm->AddHistogram(histClass, "CosThetaStarRandom", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarRandom);
+      //   hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 100, 0.98, 1.08, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
+      //   if (subGroupStr.Contains("tpc")) {
+      //     hm->AddHistogram(histClass, "CosThetaStarTPC", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+      //     hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+      //     hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+      //   }
+      //   if (subGroupStr.Contains("ft0")) {
+      //     hm->AddHistogram(histClass, "CosThetaStarFT0A", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
+      //     hm->AddHistogram(histClass, "CosThetaStarFT0C", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
+      //     hm->AddHistogram(histClass, "Cos2ThetaStarFT0C_Mass", "", true, 100, 0.98, 1.08, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarFT0C);
+      //     hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0C", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
+      //     hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
+      //     hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0C", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
+      //     hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
+      //   }
+      //   if (subGroupStr.Contains("mc")) {
+      //     hm->AddHistogram(histClass, "EventPlaneAngle", "", false, 100, -TMath::Pi(), TMath::Pi(), VarManager::kMCEventPlaneAngle);
+      //     hm->AddHistogram(histClass, "CosThetaStarMC", "", false, 100, -1.0, 1.0, VarManager::kMCCosThetaStar);
+      //     hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarMC", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kMCCosThetaStar);
+      //     hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarMC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kMCCosThetaStar);//here
+      //   }
+      // }
+      if (subGroupStr.Contains("globalpolarization")) {
+
+        // 4D axis order: mass, pair pT, cos(theta*), FT0C centrality.
+        constexpr int nDimPol4D = 4;
+        int binsPol4D[nDimPol4D] = {100, 80, 20, 40};
+        double xminPol4D[nDimPol4D] = {0.98, 0.0, -1.0, 0.0};
+        double xmaxPol4D[nDimPol4D] = {1.08, 20.0, 1.0, 100.0};
+
         hm->AddHistogram(histClass, "CosThetaStarRandom", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarRandom);
         hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 100, 0.98, 1.08, VarManager::kMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
+
         if (subGroupStr.Contains("tpc")) {
           hm->AddHistogram(histClass, "CosThetaStarTPC", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarTPC);
           hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
           hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarTPC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarTPC);
+
+          // NEW: TPC 4D histogram.
+          int varsTPC4D[nDimPol4D] = {VarManager::kMass, VarManager::kPt, VarManager::kCosThetaStarTPC, VarManager::kCentFT0C};
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarTPC_CentFT0C", "", nDimPol4D, varsTPC4D, binsPol4D, xminPol4D, xmaxPol4D, nullptr, -1, true, true);
         }
+
         if (subGroupStr.Contains("ft0")) {
           hm->AddHistogram(histClass, "CosThetaStarFT0A", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
           hm->AddHistogram(histClass, "CosThetaStarFT0C", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
@@ -1386,14 +1423,28 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
           hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
           hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0C", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0C);
           hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarFT0A", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarFT0A);
+
+          // NEW: FT0C 4D histogram.
+          int varsFT0C4D[nDimPol4D] = {VarManager::kMass, VarManager::kPt, VarManager::kCosThetaStarFT0C, VarManager::kCentFT0C};
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0C_CentFT0C", "", nDimPol4D, varsFT0C4D, binsPol4D, xminPol4D, xmaxPol4D, nullptr, -1, true, true);
+
+          // NEW: FT0A 4D histogram.
+          int varsFT0A4D[nDimPol4D] = {VarManager::kMass, VarManager::kPt, VarManager::kCosThetaStarFT0A, VarManager::kCentFT0C};
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0A_CentFT0C", "", nDimPol4D, varsFT0A4D, binsPol4D, xminPol4D, xmaxPol4D, nullptr, -1, true, true);
         }
+
         if (subGroupStr.Contains("mc")) {
           hm->AddHistogram(histClass, "EventPlaneAngle", "", false, 100, -TMath::Pi(), TMath::Pi(), VarManager::kMCEventPlaneAngle);
           hm->AddHistogram(histClass, "CosThetaStarMC", "", false, 100, -1.0, 1.0, VarManager::kMCCosThetaStar);
           hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarMC", "", false, 100, 0.98, 1.08, VarManager::kMass, 80, 0.0, 20.0, VarManager::kPt, 20, -1.0, 1.0, VarManager::kMCCosThetaStar);
-          hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarMC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kMCCosThetaStar);//here
+          hm->AddHistogram(histClass, "Mass_CentFT0C_CosThetaStarMC", "", false, 100, 0.98, 1.08, VarManager::kMass, 40, 0.0, 100.0, VarManager::kCentFT0C, 20, -1.0, 1.0, VarManager::kMCCosThetaStar);
+
+          // NEW: MC 4D histogram.
+          int varsMC4D[nDimPol4D] = {VarManager::kMass, VarManager::kPt, VarManager::kMCCosThetaStar, VarManager::kCentFT0C};
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarMC_CentFT0C", "", nDimPol4D, varsMC4D, binsPol4D, xminPol4D, xmaxPol4D, nullptr, -1, true, true);
         }
-      }
+      }//here 4D
+
       if (subGroupStr.Contains("upsilon")) {
         hm->AddHistogram(histClass, "MassUpsilon_Pt", "", false, 500, 7.0, 12.0, VarManager::kMass, 400, 0.0, 40.0, VarManager::kPt);
       }
