@@ -1431,6 +1431,18 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
           // NEW: FT0A 4D histogram.
           int varsFT0A4D[nDimPol4D] = {VarManager::kMass, VarManager::kPt, VarManager::kCosThetaStarFT0A, VarManager::kCentFT0C};
           hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0A_CentFT0C", "", nDimPol4D, varsFT0A4D, binsPol4D, xminPol4D, xmaxPol4D, nullptr, -1, true, true);
+        
+          // QA: pair azimuth relative to the second-order FT0C event plane.
+          hm->AddHistogram(histClass, "DeltaPhiEPFT0C", "", false,36, 0.0, TMath::Pi(), VarManager::kDeltaPhiEPFT0C);
+          // 5D: mass, pair pT, cos(theta*), centrality, deltaPhi.
+          constexpr int nDimPol5D = 5;
+          int varsPol5D[nDimPol5D] = {VarManager::kMass, VarManager::kPt, VarManager::kCosThetaStarFT0C, VarManager::kCentFT0C, VarManager::kDeltaPhiEPFT0C
+          };
+          int binsPol5D[nDimPol5D] = {100, 80, 20, 40, 4};
+          double xminPol5D[nDimPol5D] = {0.98, 0.0, -1.0, 0.0, 0.0};
+          double xmaxPol5D[nDimPol5D] = {1.08, 20.0, 1.0, 100.0, TMath::Pi()};
+          hm->AddHistogram(histClass, "Mass_Pt_CosThetaStarFT0C_CentFT0C_DeltaPhiEPFT0C", "", nDimPol5D, varsPol5D, binsPol5D, xminPol5D, xmaxPol5D, nullptr, -1, true, true);
+        
         }
 
         if (subGroupStr.Contains("mc")) {

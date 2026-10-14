@@ -1591,6 +1591,10 @@ void VarManager::SetDefaultVarNames()
   fgVariableUnits[kCosThetaStarFT0A] = "";
   fgVariableNames[kCosThetaStarFT0C] = "cos#it{#theta}^{*}_{FT0C}";
   fgVariableUnits[kCosThetaStarFT0C] = "";
+
+  fgVariableNames[kDeltaPhiEPFT0C] = "#varphi_{pair}-#Psi_{2}^{FT0C} (mod #pi)";
+  fgVariableUnits[kDeltaPhiEPFT0C] = "rad";//add Delta PhiEPFT0C
+
   fgVariableNames[kAbsCosThetaStarFT0C] = "|cos#it{#theta}^{*}_{FT0C}|";
   fgVariableUnits[kAbsCosThetaStarFT0C] = "";
   fgVariableNames[kCos2ThetaStarFT0C] = "cos^{2}#it{#theta}^{*}_{FT0C}";
@@ -2441,6 +2445,9 @@ void VarManager::SetDefaultVarNames()
   fgVarNamesMap["kCosThetaStarTPC"] = kCosThetaStarTPC;
   fgVarNamesMap["kCosThetaStarFT0A"] = kCosThetaStarFT0A;
   fgVarNamesMap["kCosThetaStarFT0C"] = kCosThetaStarFT0C;
+
+  fgVarNamesMap["kDeltaPhiEPFT0C"] = kDeltaPhiEPFT0C;// kDeltaPhiEPFT0C = kPhiFT0C - kPsi2EP;
+
   fgVarNamesMap["kAbsCosThetaStarFT0C"] = kAbsCosThetaStarFT0C;
   fgVarNamesMap["kCos2ThetaStarFT0C"] = kCos2ThetaStarFT0C;
   fgVarNamesMap["kCosThetaStarRandom"] = kCosThetaStarRandom;

@@ -798,6 +798,7 @@ class VarManager : public TObject
     kCosThetaStarTPC,
     kCosThetaStarFT0A,
     kCosThetaStarFT0C,
+    kDeltaPhiEPFT0C, // (phi_pair - Psi2_FT0C), wrapped to [0, pi) here
     kAbsCosThetaStarFT0C,
     kCos2ThetaStarFT0C,
     kCosThetaStarRandom,
@@ -5800,6 +5801,27 @@ void VarManager::FillPairVn(T1 const& t1, T2 const& t2, float* values)
   float Psi3B = getEventPlane(3, values[kQ3X0B], values[kQ3Y0B]);
   float Psi2C = getEventPlane(2, values[kQ2X0C], values[kQ2Y0C]);
   float Psi3C = getEventPlane(3, values[kQ3X0C], values[kQ3Y0C]);
+
+  if (fgUsedVars[kDeltaPhiEPFT0C]) {
+    values[kDeltaPhiEPFT0C] = -999.f;
+
+    const double qx = values[kQ2X0C];
+    const double qy = values[kQ2Y0C];
+
+    // Assumes upstream event selection has rejected invalid Q vectors.
+    if (std::isfinite(qx) && std::isfinite(qy) &&
+        (qx * qx + qy * qy > 0.) &&
+        std::isfinite(Psi2C)) {
+
+      double deltaPhi = std::fmod(v12.Phi() - Psi2C, TMath::Pi());
+      if (deltaPhi < 0.) {
+        deltaPhi += TMath::Pi();
+      }
+
+      values[kDeltaPhiEPFT0C] = deltaPhi;
+    }
+  }//here
+
   values[kCos2DeltaPhi] = TMath::Cos(2 * (v12.Phi() - Psi2A));
   values[kCos3DeltaPhi] = TMath::Cos(3 * (v12.Phi() - Psi3A));
   values[kR2EP_AB] = TMath::Cos(2 * (Psi2A - Psi2B));
