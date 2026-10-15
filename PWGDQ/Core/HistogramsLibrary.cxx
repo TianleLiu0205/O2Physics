@@ -1165,6 +1165,39 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
     hm->AddHistogram(histClass, "Rapidity", "", false, 100, -5.0, 5.0, VarManager::kMCY);
     hm->AddHistogram(histClass, "Eta_Pt", "", false, 40, -2.0, 2.0, VarManager::kMCEta, 200, 0.0, 20.0, VarManager::kMCPt);
     hm->AddHistogram(histClass, "Phi_Eta", "#phi vs #eta distribution", false, 200, -5.0, 5.0, VarManager::kMCEta, 200, -2. * o2::constants::math::PI, 2. * o2::constants::math::PI, VarManager::kMCPhi);
+    // Generator-level polarization histograms.
+    // Place inside: if (!groupStr.CompareTo("mctruth_pair")) { ... }
+    if (subGroupStr.Contains("polarization")) {
+      auto addMCPolHistograms = [&](const char* angleName, int angleVar, int massBins, double angleMin, double angleMax) {
+        hm->AddHistogram(histClass, Form("Mass_Pt_%s", angleName), "", false, massBins, 0.98, 1.08, VarManager::kMCMass, 80, 0.0, 20.0, VarManager::kMCPt, 20, angleMin, angleMax, angleVar);
+        hm->AddHistogram(histClass, Form("Mass_Centrality_%s", angleName), "", false, massBins, 0.98, 1.08, VarManager::kMCMass, 40, 0.0, 100.0, VarManager::kMCEventCentrFT0C, 20, angleMin, angleMax, angleVar);
+      };
+
+      const double twoPi = 2. * o2::constants::math::PI;
+
+      if (subGroupStr.Contains("helicity")) {
+        addMCPolHistograms("CosThetaHE", VarManager::kMCCosThetaHE, 100, -1., 1.);
+        addMCPolHistograms("PhiHE", VarManager::kMCPhiHE, 100, 0., twoPi);
+        addMCPolHistograms("PhiTildeHE", VarManager::kMCPhiTildeHE, 100, 0., twoPi);
+      }
+
+      if (subGroupStr.Contains("collins-soper")) {
+        addMCPolHistograms("CosThetaCS", VarManager::kMCCosThetaCS, 100, -1., 1.);
+        addMCPolHistograms("PhiCS", VarManager::kMCPhiCS, 100, 0., twoPi);
+        addMCPolHistograms("PhiTildeCS", VarManager::kMCPhiTildeCS, 100, 0., twoPi);
+      }
+
+      if (subGroupStr.Contains("production")) {
+        addMCPolHistograms("CosThetaPP", VarManager::kMCCosThetaPP, 100, -1., 1.);
+        addMCPolHistograms("PhiPP", VarManager::kMCPhiPP, 100, 0., twoPi);
+        addMCPolHistograms("PhiTildePP", VarManager::kMCPhiTildePP, 100, 0., twoPi);
+      }
+
+      if (subGroupStr.Contains("random")) {
+        addMCPolHistograms("CosThetaRM", VarManager::kMCCosThetaRM, 200, -1., 1.);
+      }
+    }
+        
     if (subGroupStr.Contains("polarization")) {
       if (subGroupStr.Contains("pp")) {
         int varspTHE[4] = {VarManager::kMCPt, VarManager::kMCCosThetaHE, VarManager::kMCPhiHE, VarManager::kMCPhiTildeHE};
@@ -1178,7 +1211,7 @@ void o2::aod::dqhistograms::DefineHistograms(HistogramManager* hm, const char* h
       if (subGroupStr.Contains("pbpb")) {
         hm->AddHistogram(histClass, "CosThetaStarRandom", "", false, 100, -1.0, 1.0, VarManager::kCosThetaStarRandom);
         hm->AddHistogram(histClass, "Pt_Cent_CosThetaStarRandom", "", false, 20, 0.0, 20.0, VarManager::kMCPt, 9, 0., 90., VarManager::kMCEventCentrFT0C, 20, -1.0, 1.0, VarManager::kCosThetaStarRandom);
-        hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 50, 2.0, 4.0, VarManager::kMCMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
+        hm->AddHistogram(histClass, "Cos2ThetaStarRandom_Mass", "", true, 100, 0.98, 1.08, VarManager::kMCMass, 100, -1.0, 1.0, VarManager::kCos2ThetaStarRandom);
         hm->AddHistogram(histClass, "CosThetaStar", "", false, 100, -1.0, 1.0, VarManager::kMCCosThetaStar);
       }
     }

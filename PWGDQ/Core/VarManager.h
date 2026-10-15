@@ -3661,7 +3661,8 @@ void VarManager::FillPair(T1 const& t1, T2 const& t2, float* values)
     }
 
     if (usePP) {
-      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      //ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f).Unit();
       ROOT::Math::XYZVector yaxis_PP{(v12.Vect()).Unit()};
       ROOT::Math::XYZVector xaxis_PP{(yaxis_PP.Cross(zaxis_PP)).Unit()};
       if (fgUsedVars[kCosThetaPP]) {
@@ -4112,7 +4113,8 @@ void VarManager::FillPairME(T1 const& t1, T2 const& t2, float* values)
     }
 
     if (usePP) {
-      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      // ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f).Unit();
       ROOT::Math::XYZVector yaxis_PP{(v12.Vect()).Unit()};
       ROOT::Math::XYZVector xaxis_PP{(yaxis_PP.Cross(zaxis_PP)).Unit()};
       if (fgUsedVars[kCosThetaPP]) {
@@ -4347,7 +4349,8 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
     }
 
     if (usePP) {
-      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      // ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f).Unit();
       ROOT::Math::XYZVector yaxis_PP{v12.Vect().Unit()};
       ROOT::Math::XYZVector xaxis_PP{(yaxis_PP.Cross(zaxis_PP)).Unit()};
       if (fgUsedVars[kMCCosThetaPP]) {
@@ -7172,7 +7175,8 @@ void VarManager::FillPairAlice3(T1 const& t1, T2 const& t2, float* values)
     }
 
     if (usePP) {
-      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      // ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f);
+      ROOT::Math::XYZVector zaxis_PP = ROOT::Math::XYZVector(v12.Py(), -v12.Px(), 0.f).Unit();
       ROOT::Math::XYZVector yaxis_PP{(v12.Vect()).Unit()};
       ROOT::Math::XYZVector xaxis_PP{(yaxis_PP.Cross(zaxis_PP)).Unit()};
       if (fgUsedVars[kCosThetaPP]) {
