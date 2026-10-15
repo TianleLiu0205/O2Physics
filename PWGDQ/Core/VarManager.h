@@ -4270,6 +4270,26 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
   values[kMCP1] = t1.p();
   values[kMCP2] = t2.p();
 
+    // Generated pair azimuth relative to the reconstructed FT0C event plane.
+  if (fgUsedVars[kDeltaPhiEPFT0C]) {
+    values[kDeltaPhiEPFT0C] = -999.f;
+
+    const double qx = values[kQ2X0C];
+    const double qy = values[kQ2Y0C];
+
+    if (std::isfinite(qx) && std::isfinite(qy) && (qx * qx + qy * qy > 0.)) {
+      const double psi2FT0C = getEventPlane(2, qx, qy);
+
+      if (std::isfinite(psi2FT0C) && std::isfinite(v12.Phi())) {
+        double deltaPhi = std::fmod(v12.Phi() - psi2FT0C, TMath::Pi());
+        if (deltaPhi < 0.) {
+          deltaPhi += TMath::Pi();
+        }
+        values[kDeltaPhiEPFT0C] = deltaPhi;
+      }
+    }
+  }
+
   // polarization parameters
   bool useHE = fgUsedVars[kMCCosThetaHE] || fgUsedVars[kMCPhiHE]; // helicity frame
   bool useCS = fgUsedVars[kMCCosThetaCS] || fgUsedVars[kMCPhiCS]; // Collins-Soper frame
