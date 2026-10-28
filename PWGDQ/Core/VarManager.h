@@ -740,6 +740,7 @@ class VarManager : public TObject
     kMCCosThetaStar,
     kMCCosThetaStarFT0C,
     kMCCosThetaStarFT0A,
+    kMCCosThetaStarRandom,//here, random 
     kMCCosThetaStarTPC,//here
 
     // Pair variables
@@ -4153,6 +4154,22 @@ void VarManager::FillPairME(T1 const& t1, T2 const& t2, float* values)
         values[kCosThetaRM] = zaxis_RM.Dot(v_CM);
     }
   }
+  if (fgUsedVars[kCosThetaStarRandom]) {
+    ROOT::Math::Boost boostv12{v12.BoostToCM()};
+    ROOT::Math::XYZVectorF v1_CM{(boostv12(v1).Vect()).Unit()};
+    ROOT::Math::XYZVectorF v2_CM{(boostv12(v2).Vect()).Unit()};
+
+    ROOT::Math::XYZVectorF v_CM =
+        (t1.sign() > 0 ? v1_CM : v2_CM);
+
+    ROOT::Math::XYZVector zaxisRandom(
+        TMath::Cos(values[kRandomPsi2]),
+        TMath::Sin(values[kRandomPsi2]), 0.);
+
+    values[kCosThetaStarRandom] = v_CM.Dot(zaxisRandom);
+    values[kCos2ThetaStarRandom] =
+        values[kCosThetaStarRandom] * values[kCosThetaStarRandom];
+  }
 
   if constexpr ((fillMap & ReducedEventQvector) > 0 || (fillMap & CollisionQvect) > 0) {
     // TODO: provide different computations for vn
@@ -4288,7 +4305,7 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
         values[kDeltaPhiEPFT0C] = deltaPhi;
       }
     }
-  }
+  }//here
 
   // polarization parameters
   bool useHE = fgUsedVars[kMCCosThetaHE] || fgUsedVars[kMCPhiHE]; // helicity frame
@@ -4429,13 +4446,20 @@ void VarManager::FillPairMC(T1 const& t1, T2 const& t2, float* values)
 //   }
 // }
 
-  if (fgUsedVars[kCosThetaStarRandom] || fgUsedVars[kMCCosThetaStar] || fgUsedVars[kMCCosThetaStarTPC] || fgUsedVars[kMCCosThetaStarFT0A] || fgUsedVars[kMCCosThetaStarFT0C]) {
+  if (fgUsedVars[kMCCosThetaStarRandom] || fgUsedVars[kCosThetaStarRandom] || fgUsedVars[kMCCosThetaStar] || fgUsedVars[kMCCosThetaStarTPC] || fgUsedVars[kMCCosThetaStarFT0A] || fgUsedVars[kMCCosThetaStarFT0C]) {
     ROOT::Math::Boost boostv12{v12.BoostToCM()};
     ROOT::Math::XYZVectorF v1_CM{(boostv12(v1).Vect()).Unit()};
     ROOT::Math::XYZVectorF v2_CM{(boostv12(v2).Vect()).Unit()};
     ROOT::Math::XYZVectorF v_CM = (t1.pdgCode() > 0 ? v1_CM : v2_CM);
 
-    if (fgUsedVars[kCosThetaStarRandom]) { ROOT::Math::XYZVector zaxisRandom = ROOT::Math::XYZVector(TMath::Cos(values[kRandomPsi2]), TMath::Sin(values[kRandomPsi2]), 0).Unit(); values[kCosThetaStarRandom] = v_CM.Dot(zaxisRandom); values[kCos2ThetaStarRandom] = values[kCosThetaStarRandom] * values[kCosThetaStarRandom]; }
+    if (fgUsedVars[kMCCosThetaStarRandom] || fgUsedVars[kCosThetaStarRandom]) {
+      ROOT::Math::XYZVector zaxisRandom = ROOT::Math::XYZVector(TMath::Cos(values[kRandomPsi2]), TMath::Sin(values[kRandomPsi2]), 0).Unit();
+      values[kMCCosThetaStarRandom] = v_CM.Dot(zaxisRandom);
+      if (fgUsedVars[kCosThetaStarRandom]) {
+        values[kCosThetaStarRandom] = values[kMCCosThetaStarRandom];
+        values[kCos2ThetaStarRandom] = values[kCosThetaStarRandom] * values[kCosThetaStarRandom];
+      }
+    }//here
 
     if (fgUsedVars[kMCCosThetaStar]) { ROOT::Math::XYZVector zaxisTrue = ROOT::Math::XYZVector(TMath::Cos(values[kMCEventPlaneAngle]), TMath::Sin(values[kMCEventPlaneAngle]), 0).Unit(); values[kMCCosThetaStar] = v_CM.Dot(zaxisTrue); }
 

@@ -95,6 +95,16 @@ void VarManager::SetVariableDependencies()
   //
   // Set as used variables on which other variables calculation depends
   //
+
+  if (fgUsedVars[kCos2ThetaStarRandom]) {
+    fgUsedVars[kCosThetaStarRandom] = true;
+  }
+
+  if (fgUsedVars[kCosThetaStarRandom] ||
+      fgUsedVars[kMCCosThetaStarRandom]) {
+    fgUsedVars[kRandomPsi2] = true;
+  }//here
+
   if (fgUsedVars[kP]) {
     fgUsedVars[kPt] = true;
     fgUsedVars[kEta] = true;
@@ -1599,6 +1609,8 @@ void VarManager::SetDefaultVarNames()
   fgVariableUnits[kAbsCosThetaStarFT0C] = "";
   fgVariableNames[kCos2ThetaStarFT0C] = "cos^{2}#it{#theta}^{*}_{FT0C}";
   fgVariableUnits[kCos2ThetaStarFT0C] = "";
+  fgVariableNames[kMCCosThetaStarRandom] ="MC cos#it{#theta}^{*}_{Random}";
+  fgVariableUnits[kMCCosThetaStarRandom] = "";//here
   fgVariableNames[kCosThetaStarRandom] = "cos#it{#theta}^{*}_{Random}";
   fgVariableUnits[kCosThetaStarRandom] = "";
   fgVariableNames[kCos2ThetaStarRandom] = "cos^{2}#it{#theta}^{*}_{Random}";
@@ -2450,6 +2462,7 @@ void VarManager::SetDefaultVarNames()
 
   fgVarNamesMap["kAbsCosThetaStarFT0C"] = kAbsCosThetaStarFT0C;
   fgVarNamesMap["kCos2ThetaStarFT0C"] = kCos2ThetaStarFT0C;
+  fgVarNamesMap["kMCCosThetaStarRandom"] = kMCCosThetaStarRandom;//here
   fgVarNamesMap["kCosThetaStarRandom"] = kCosThetaStarRandom;
   fgVarNamesMap["kCos2ThetaStarRandom"] = kCos2ThetaStarRandom;
   fgVarNamesMap["kMCCosThetaStar"] = kMCCosThetaStar;

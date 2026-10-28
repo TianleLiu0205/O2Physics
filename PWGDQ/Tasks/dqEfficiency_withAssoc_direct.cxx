@@ -1127,6 +1127,18 @@ struct AnalysisPrefilterSelection {
 
 struct AnalysisSameEventPairing {
 
+  std::map<int64_t, float> fRandomPlaneByCollision;
+
+  void restoreRandomPlane(int64_t collisionIndex)
+  {
+    if (!VarManager::GetUsedVar(VarManager::kRandomPsi2)) {
+      return;
+    }
+    auto it = fRandomPlaneByCollision.try_emplace(collisionIndex, VarManager::fgValues[VarManager::kRandomPsi2]).first;
+    VarManager::fgValues[VarManager::kRandomPsi2] = it->second;
+  }//here
+
+
   Produces<aod::Dielectrons> dielectronList;
   Produces<aod::DielectronsExtra> dielectronsExtraList;
   Produces<aod::DielectronsInfo> dielectronInfoList;
@@ -1717,6 +1729,7 @@ struct AnalysisSameEventPairing {
   template <bool TTwoProngFitter, int TPairType, uint32_t TEventFillMap, uint32_t TTrackFillMap, typename TEvents, typename TTracks, typename TEventsMC>
   void runSameEventPairing(TEvents const& events, BCsWithTimestamps const& bcs, Preslice<soa::Join<aod::TrackAssoc, aod::BarrelTrackCuts, aod::Prefilter>>& preslice, soa::Join<aod::TrackAssoc, aod::BarrelTrackCuts, aod::Prefilter> const& assocs, TTracks const& tracks, TEventsMC const& mcEvents, McParticles const& /*mcTracks*/)
   {
+    fRandomPlaneByCollision.clear();
     cout << "AnalysisSameEventPairing::runSameEventPairing() called" << endl;
     if (events.size() == 0) {
       LOG(warning) << "No events in this TF, going to the next one ...";
@@ -1778,6 +1791,7 @@ struct AnalysisSameEventPairing {
         VarManager::FillEvent<VarManager::ObjTypes::CollisionMC>(mcEvent, VarManager::fgValues);
       }
 
+      restoreRandomPlane(event.globalIndex());//here
       auto groupedAssocs = assocs.sliceBy(preslice, event.globalIndex());
       if (groupedAssocs.size() == 0) {
         continue;
@@ -2285,6 +2299,8 @@ struct AnalysisSameEventPairing {
       // fill event information
       VarManager::FillEvent<TEventFillMap>(event);
       VarManager::FillEvent<VarManager::ObjTypes::CollisionMC>(mcEvent);
+
+      restoreRandomPlane(event.globalIndex());//here
 
       auto groupedMCTracks = mcTracks.sliceBy(perReducedMcEvent, mcCollisionGlobalIndex);
       groupedMCTracks.bindInternalIndicesTo(&mcTracks);
