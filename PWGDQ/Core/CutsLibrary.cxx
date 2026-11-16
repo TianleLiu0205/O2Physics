@@ -886,40 +886,6 @@ AnalysisCompositeCut* o2::aod::dqcuts::GetCompositeCut(const char* cutName)
     return cut;
   }
 
-//   if (!nameStr.compare("kaonPt0to6_noPID")) {
-//   AnalysisCut* kineCut = new AnalysisCut("kaonPt0to6_kine", "kaon kine cuts");
-//   kineCut->AddCut(VarManager::kPt, 0.15, 6.0);
-//   kineCut->AddCut(VarManager::kEta, -0.9, 0.9);
-
-//   AnalysisCut* qualityCuts = new AnalysisCut("kaonPt0to6_quality", "kaon quality cuts");
-//   qualityCuts->AddCut(VarManager::kIsITSibAny, 0.5, 1.5);
-//   qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
-//   qualityCuts->AddCut(VarManager::kTPCncls, 70, 161.);
-//   qualityCuts->AddCut(VarManager::kTrackDCAz, -0.5, 0.5);
-
-//   cut->AddCut(kineCut);
-//   cut->AddCut(qualityCuts);
-//   return cut;
-// }
-
-// if (!nameStr.compare("kaonPt0to6")) {
-//   AnalysisCut* kineCut = new AnalysisCut("kaonPt0to6_kine", "kaon kine cuts");
-//   kineCut->AddCut(VarManager::kPt, 0.15, 6.0);
-//   kineCut->AddCut(VarManager::kEta, -0.9, 0.9);
-
-//   AnalysisCut* qualityCuts = new AnalysisCut("kaonPt0to6_quality", "kaon quality cuts");
-//   qualityCuts->AddCut(VarManager::kIsITSibAny, 0.5, 1.5);
-//   qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
-//   qualityCuts->AddCut(VarManager::kTPCncls, 70, 161.);
-//   qualityCuts->AddCut(VarManager::kTrackDCAz, -0.5, 0.5);
-
-//   cut->AddCut(kineCut);
-//   cut->AddCut(qualityCuts);
-//   cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
-
-//   return cut;
-// }
-
 if (!nameStr.compare("kaonPt0to6_noPID")) {
   AnalysisCut* kineCut = new AnalysisCut("kaonPt0to6_kine", "kaon kine cuts");
   kineCut->AddCut(VarManager::kPt, 0.15, 999.0);
@@ -961,6 +927,120 @@ if (!nameStr.compare("kaonPt0to6")) {
   return cut;
 }
 //here
+
+// Track-cut variations: each selection changes only one cut.
+if (!nameStr.compare("kaonPt0to6_pt020") ||
+    !nameStr.compare("kaonPt0to6_eta07") ||
+    !nameStr.compare("kaonPt0to6_dcaxy005") ||
+    !nameStr.compare("kaonPt0to6_dcaz005") ||
+    !nameStr.compare("kaonPt0to6_tpcchi2_3") ||
+    !nameStr.compare("kaonPt0to6_itschi2_25") ||
+    !nameStr.compare("kaonPt0to6_tpcncls80")) {
+
+  // Nominal values.
+  double ptMin = 0.15;
+  double etaMax = 0.8;
+  double dcaXYMax = 0.1;
+  double dcaZMax = 0.1;
+  double tpcChi2Max = 4.0;
+  double itsChi2Max = 36.0;
+  double tpcNclsMin = 70.0;
+
+  // Change exactly one condition.
+  if (!nameStr.compare("kaonPt0to6_pt020")) {
+    ptMin = 0.20;
+  } else if (!nameStr.compare("kaonPt0to6_eta07")) {
+    etaMax = 0.7;
+  } else if (!nameStr.compare("kaonPt0to6_dcaxy005")) {
+    dcaXYMax = 0.05;
+  } else if (!nameStr.compare("kaonPt0to6_dcaz005")) {
+    dcaZMax = 0.05;
+  } else if (!nameStr.compare("kaonPt0to6_tpcchi2_3")) {
+    tpcChi2Max = 3.0;
+  } else if (!nameStr.compare("kaonPt0to6_itschi2_25")) {
+    itsChi2Max = 25.0;
+  } else if (!nameStr.compare("kaonPt0to6_tpcncls80")) {
+    tpcNclsMin = 80.0;
+  }
+
+  AnalysisCut* kineCut = new AnalysisCut(
+      (nameStr + "_kine").c_str(), "kaon kine cuts");
+
+  kineCut->AddCut(VarManager::kPt, ptMin, 999.0);
+  kineCut->AddCut(VarManager::kEta, -etaMax, etaMax);
+
+  AnalysisCut* qualityCuts = new AnalysisCut(
+      (nameStr + "_quality").c_str(), "kaon quality cuts");
+
+  qualityCuts->AddCut(
+      VarManager::kTrackDCAxy, -dcaXYMax, dcaXYMax);
+  qualityCuts->AddCut(
+      VarManager::kTrackDCAz, -dcaZMax, dcaZMax);
+  qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, tpcChi2Max);
+  qualityCuts->AddCut(VarManager::kITSchi2, 0.0, itsChi2Max);
+  qualityCuts->AddCut(VarManager::kTPCncls, tpcNclsMin, 999.0);
+
+  cut->AddCut(kineCut);
+  cut->AddCut(qualityCuts);
+
+  // Same PID as nominal:
+  // TPC +/-3; additionally TOF +/-3 when TOF is available.
+  cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+
+  // Same low-p_in pion veto as nominal.
+  AnalysisCut* pidCuts = new AnalysisCut(
+      (nameStr + "_pid").c_str(), "kaon PID cuts");
+
+  pidCuts->AddCut(
+      VarManager::kTPCnSigmaPi, -2.0, 2.0, true,
+      VarManager::kPin, 0.0, 0.7);
+
+  cut->AddCut(pidCuts);
+
+  return cut;
+}//here
+
+// Nominal kaon selection + TPC electron veto.
+// Test variation: reject tracks with |nSigmaTPC_e| <= 3.
+if (!nameStr.compare("kaonPt0to6_eVeto3")) {
+
+  AnalysisCut* kineCut = new AnalysisCut(
+      "kaonPt0to6_eVeto3_kine", "kaon kine cuts");
+
+  kineCut->AddCut(VarManager::kPt, 0.15, 999.0);
+  kineCut->AddCut(VarManager::kEta, -0.8, 0.8);
+
+  AnalysisCut* qualityCuts = new AnalysisCut(
+      "kaonPt0to6_eVeto3_quality", "kaon quality cuts");
+
+  qualityCuts->AddCut(VarManager::kTrackDCAxy, -0.1, 0.1);
+  qualityCuts->AddCut(VarManager::kTrackDCAz, -0.1, 0.1);
+  qualityCuts->AddCut(VarManager::kTPCchi2, 0.0, 4.0);
+  qualityCuts->AddCut(VarManager::kITSchi2, 0.0, 36.0);
+  qualityCuts->AddCut(VarManager::kTPCncls, 70.0, 999.0);
+
+  cut->AddCut(kineCut);
+  cut->AddCut(qualityCuts);
+
+  // Keep nominal kaon PID.
+  cut->AddCut(GetCompositeCut("kaonPIDTPCTOForTPC700"));
+
+  AnalysisCut* pidCuts = new AnalysisCut(
+      "kaonPt0to6_eVeto3_pid", "kaon PID with electron veto");
+
+  // Keep nominal low-p_in pion veto.
+  pidCuts->AddCut(
+      VarManager::kTPCnSigmaPi, -2.0, 2.0, true,
+      VarManager::kPin, 0.0, 0.7);
+
+  // Additional electron veto: exclude [-3, 3].
+  pidCuts->AddCut(
+      VarManager::kTPCnSigmaEl, -3.0, 3.0, true);
+
+  cut->AddCut(pidCuts);
+
+  return cut;
+}//here
 
 if (!nameStr.compare("kaonPt0to6_hasTOF")) {
 
@@ -6149,15 +6229,17 @@ AnalysisCut* o2::aod::dqcuts::GetAnalysisCut(const char* cutName)
   }
 
   if (!nameStr.compare("kaonPID_TPCnTOF")) {
-     cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);
+    cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 2.0);
+    cut->AddCut(VarManager::kTOFnSigmaKa, -3.0, 2.0);
+    //cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);
     // cut->AddCut(VarManager::kTPCnSigmaKa, -2.5, 2.5);//here
-    cut->AddCut(VarManager::kTOFnSigmaKa, -2.0, 2.0);
+    //cut->AddCut(VarManager::kTOFnSigmaKa, -2.0, 2.0);
     return cut;
   }
 
   if (!nameStr.compare("kaonPIDnsigma700")) {
-     //cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
-    cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);//here
+    cut->AddCut(VarManager::kTPCnSigmaKa, -3.0, 3.0);
+    //cut->AddCut(VarManager::kTPCnSigmaKa, -2.0, 2.0);//here
     //cut->AddCut(VarManager::kPin, 0.0, 0.7);//here
     return cut;
   }
